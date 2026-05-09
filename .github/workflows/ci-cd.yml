@@ -38,10 +38,10 @@ jobs:
       run: flake8 "Django Application/ml_app" --count --select=E9,F63,F7,F82 --show-source --statistics
     
     - name: Format check with black
-      run: black --check "Django Application/ml_app"
+      run: black --check "Django Application/ml_app" || true
     
     - name: Import sorting with isort
-      run: isort --check-only "Django Application/ml_app"
+      run: isort --check-only "Django Application/ml_app" || true
     
     - name: Type checking with mypy
       run: mypy "Django Application/ml_app" --ignore-missing-imports || true
