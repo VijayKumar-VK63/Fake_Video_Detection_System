@@ -31,20 +31,20 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r Django\ Application/requirements.txt
-        pip install -r Django\ Application/requirements-dev.txt
+        pip install django==5.0.6 numpy pillow opencv-python
+        pip install flake8 black isort mypy
     
     - name: Lint with flake8
-      run: flake8 Django\ Application/ml_app --count --select=E9,F63,F7,F82 --show-source --statistics
+      run: flake8 "Django Application/ml_app" --count --select=E9,F63,F7,F82 --show-source --statistics
     
     - name: Format check with black
-      run: black --check Django\ Application/ml_app
+      run: black --check "Django Application/ml_app"
     
     - name: Import sorting with isort
-      run: isort --check-only Django\ Application/ml_app
+      run: isort --check-only "Django Application/ml_app"
     
     - name: Type checking with mypy
-      run: mypy Django\ Application/ml_app --ignore-missing-imports || true
+      run: mypy "Django Application/ml_app" --ignore-missing-imports || true
 
   # Unit Tests
   test:
@@ -77,14 +77,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r Django\ Application/requirements.txt
-        pip install -r Django\ Application/requirements-dev.txt
+        pip install django==5.0.6 numpy pillow opencv-python
+        pip install coverage
     
     - name: Run tests with coverage
       env:
         DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/test_db
       run: |
-        cd Django\ Application
+        cd "Django Application"
         coverage run --source='ml_app' manage.py test
         coverage report
         coverage xml
@@ -92,7 +92,7 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./Django\ Application/coverage.xml
+        files: "./Django Application/coverage.xml"
         flags: unittests
         fail_ci_if_error: false
 
@@ -115,10 +115,10 @@ jobs:
         pip install bandit safety
     
     - name: Run Bandit security scan
-      run: bandit -r Django\ Application/ml_app -ll || true
+      run: bandit -r "Django Application/ml_app" -ll || true
     
     - name: Check for vulnerable dependencies
-      run: safety check Django\ Application/requirements.txt || true
+      run: safety check -r "Django Application/requirements.txt" || true
 
   # Build Docker Image
   build:
@@ -142,7 +142,7 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
-        context: .
+        context: ./Django Application
         push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/deepfake-detector:latest
