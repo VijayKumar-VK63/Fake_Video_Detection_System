@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{%block content%}
+{%if prediction_error%}
+<div class="saas-card p-4">
+  <div class="alert alert-danger mb-0">
+    Prediction failed: {{ prediction_error }}
+  </div>
+</div>
+{%elif no_faces%}
+<div class="saas-card p-4">
+  <div class="alert alert-danger mb-0">
+    No faces detected. Cannot process the video.
+  </div>
+</div>
+{%else%}
+<div class="d-flex flex-column" style="gap: 1rem;">
+  <div class="saas-card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Extracted Frames</h5>
+      <span class="small-muted">{{ preprocessed_images|length }} frames</span>
+    </div>
+    <div class="gallery-track">
+      {% for each_image in preprocessed_images %}
+      <div class="thumb-card">
+        <img src="{% static each_image %}" alt="Frame {{forloop.counter}}">
+        <div class="thumb-meta">
+          <span>Frame {{forloop.counter}}</span>
+          <span>Extracted</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="saas-card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Detected Faces</h5>
+      <span class="small-muted">{{ faces_cropped_images|length }} crops</span>
+    </div>
+    <div class="gallery-track">
+      {% for each_image in faces_cropped_images %}
+      <div class="thumb-card">
+        <img src="{% static each_image %}" alt="Face {{forloop.counter}}">
+        <div class="thumb-meta">
+          <span>Frame {{forloop.counter}}</span>
+          <span>Face detected</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="result-grid">
+    <div class="saas-card p-3 video-panel">
+      <h5 class="mb-3">Uploaded Video</h5>
+      <video id="predict-media" controls>
+        <source src="{{MEDIA_URL}}{{original_video}}" type="video/mp4" codecs="avc1.4d002a" />
+      </video>
+    </div>
+
+    <div class="saas-card p-3 summary-card">
+      <h5 class="mb-3">Prediction Summary</h5>
+      <div class="metric-item">
+        <span>Detection Result</span>
+        {%if output == "REAL" %}
+        <span class="badge-real">REAL</span>
+        {%else%}
+        <span class="badge-fake">FAKE</span>
+        {%endif%}
+      </div>
+
+      <div class="metric-item mb-2">
+        <span>Confidence Score</span>
+        <strong class="metric-value">{{confidence}}%</strong>
+      </div>
+
+      <div class="progress detection-progress mb-3">
+        <div class="progress-bar detection-progress-bar" role="progressbar" style="width: {{confidence}}%;" aria-valuenow="{{confidence}}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+
+      <div class="metric-item"><span>Model Architecture</span><span>ResNeXt + LSTM</span></div>
+      <div class="metric-item"><span>Selected Model File</span><span>{{ selected_model_name }}</span></div>
+      <div class="metric-item"><span>Frames Configured</span><span>{{ sequence_length }}</span></div>
+      <div class="metric-item"><span>Frames Processed</span><span>{{ preprocessed_images|length }}</span></div>
+      <div class="metric-item"><span>Inference Time</span><span>Computed on request</span></div>
+    </div>
+  </div>
+</div>
+{%endif%}
+{%endblock%}
+{%block js_cripts%}
+{%endblock%}

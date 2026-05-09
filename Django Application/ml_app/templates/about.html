@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+{%block content%}
+<div class="upload-wrapper">
+	<div class="saas-card about-card p-4 p-md-5">
+		<h3 class="mb-3">About Fake Video Content Detection</h3>
+		<p class="mb-3">
+			This application analyzes uploaded videos to estimate whether content is likely real or fake using deep learning.
+			It processes frames, detects facial regions, and runs inference with a ResNeXt + LSTM model.
+		</p>
+		<div class="about-grid">
+			<div class="about-item">
+				<h6 class="mb-1">Workflow</h6>
+				<p class="mb-0">Upload video → extract frames → detect faces → run model inference → show confidence.</p>
+			</div>
+			<div class="about-item">
+				<h6 class="mb-1">Model Input</h6>
+				<p class="mb-0">The selected model determines the configured frame count used during prediction.</p>
+			</div>
+			<div class="about-item">
+				<h6 class="mb-1">Output</h6>
+				<p class="mb-0">The result includes predicted class (REAL/FAKE), confidence score, and processed previews.</p>
+			</div>
+			<div class="about-item">
+				<h6 class="mb-1">Tip</h6>
+				<p class="mb-0">Use clear frontal-face videos for better detection quality and more stable confidence scores.</p>
+			</div>
+		</div>
+	</div>
+</div>
+{%endblock%}

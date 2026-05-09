@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{%load static%}
+{%block content%}
+<div class="upload-wrapper">
+    <div class="upload-hero saas-card">
+        <h3 class="upload-title">Upload Video for Fake Video Content Detection</h3>
+        <p class="upload-desc">Upload a video to analyze whether it contains fake video content.</p>
+
+        <form class="upload-form" method="POST" enctype="multipart/form-data" name="video-upload" id="video-upload">
+            {%csrf_token%}
+            {% if form.non_field_errors %}
+                {% for each_error in form.non_field_errors %}
+                <div class="alert alert-danger mb-3">
+                    {{ each_error }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="upload-dropzone mb-3" id="upload-dropzone">
+                <label for="{{form.upload_video_file.id_for_label}}" class="mb-2">Drag and drop video here or choose a file</label>
+                {{form.upload_video_file}}
+                {%if form.upload_video_file.errors%}
+                    {%for each_error in form.upload_video_file.errors%}
+                    <div class="alert alert-danger mt-2 {{form.upload_video_file.id_for_label}}">
+                        {{each_error}}
+                    </div>
+                    {%endfor%}
+                {%endif%}
+                <video controls id="videos">
+                    <source src="" id="video_source">
+                    Your browser does not support HTML5 video.
+                </video>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="{{form.model_name.id_for_label}}">{{form.model_name.label}}</label>
+                {{form.model_name}}
+                <small class="form-text text-light model-help-text">Choose a model from the available files in the models folder.</small>
+                {%if form.model_name.errors%}
+                    {%for each_error in form.model_name.errors%}
+                    <div class="alert alert-danger mt-2 {{form.model_name.id_for_label}}">
+                        {{each_error}}
+                    </div>
+                    {%endfor%}
+                {%endif%}
+            </div>
+
+            <button id="videoUpload" type="submit" name="submit" class="btn btn-primary btn-block mt-4">Upload & Analyze</button>
+        </form>
+    </div>
+</div>
+
+<div class="spinner-overlay" id="prediction-loader">
+    <div class="inner">
+        <span class="spinner-border text-primary" role="status" aria-hidden="true"></span>
+        <span>Running fake video content detection...</span>
+    </div>
+</div>
+{%endblock%}
+{%block js_cripts%}
+<script src="{%static 'js/script.js'%}"></script>
+<script>
+    $(function () {
+        $('#video-upload').on('submit', function () {
+            $('#prediction-loader').css('display', 'flex');
+        });
+
+        var dropzone = $('#upload-dropzone');
+        dropzone.on('dragover', function (event) {
+            event.preventDefault();
+            dropzone.addClass('is-dragover');
+        });
+        dropzone.on('dragleave', function () {
+            dropzone.removeClass('is-dragover');
+        });
+        dropzone.on('drop', function (event) {
+            event.preventDefault();
+            dropzone.removeClass('is-dragover');
+            var files = event.originalEvent.dataTransfer.files;
+            if (files.length) {
+                $('#{{form.upload_video_file.id_for_label}}')[0].files = files;
+                $('#{{form.upload_video_file.id_for_label}}').trigger('change');
+            }
+        });
+    });
+</script>
+{%endblock%}
